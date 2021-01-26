@@ -45,7 +45,7 @@ for(i in 1){
                         ,"mapdata"      # base de dados WorldHires e rios
                         ,"rworldmap"    # outra base de dados de mapas do mundo
                         ,"maptools"     # Ler ESRI shapefiles 
-                        ,"mapproj"      # ProjeÁıes e grids
+                        ,"mapproj"      # Proje√ß√µes e grids
                         ,"ggmap"        # Gmaps, OSM + mapas baseados em ggplot2
                         ,"rgdal"
                         ,"sp"
@@ -69,7 +69,7 @@ for(i in 1){
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 dump_env = function(){
-  # Esta funÁ„o serve para limpar o cache do environment, sem afetar a base
+  # Esta fun√ß√£o serve para limpar o cache do environment, sem afetar a base
   objs <- ls(pos = ".GlobalEnv")
   rm(list = objs[(objs != "base") & (objs != "dump_env")], pos = ".GlobalEnv")
 }
@@ -91,7 +91,7 @@ produto.cat = read_csv('../Bases/product_category_name_translation.csv')
 pib.pc =      read.xlsx('../Bases/ext_pib_pc_municipal_2017.xlsx')
 
 # REFERENCIA PIB PC
-# PIB Municipal e PopulaÁ„o (ref mais recente È o pib de 2017)
+# PIB Municipal e Popula√ß√£o (ref mais recente √© o pib de 2017)
 # https://sidra.ibge.gov.br/pesquisa/pib-munic/tabelas
 # https://www.ibge.gov.br/estatisticas/sociais/populacao
 
@@ -104,7 +104,7 @@ cep = read.xlsx('../Bases/ext_ceps_2018.xlsx')
 
 mun.shape = read_sf('../Mapas/BR_Municipios_2019.shp')
 
-# Referencia mapa de municÌpios
+# Referencia mapa de munic√≠pios
 # Ano de ref: 2019
 # https://www.ibge.gov.br/geociencias/organizacao-do-territorio/15774-malhas.html
 
@@ -138,7 +138,7 @@ mun.shape = read_sf('../Mapas/BR_Municipios_2019.shp')
 # status_pedidos = as.data.frame(table(ordem$order_status))
 # status_pedidos$perc = round(status_pedidos$Freq/sum(status_pedidos$Freq)*100,3)
 # status_pedidos
-# # Gr·fico
+# # Gr√°fico
 # barplot(height = status_pedidos$perc,names.arg = status_pedidos$Var1,las=2, ylim = c(0,100))
 # 
 # 
@@ -146,9 +146,9 @@ mun.shape = read_sf('../Mapas/BR_Municipios_2019.shp')
 # length(unique(cliente$customer_id))
 # length(unique(cliente$customer_unique_id))
 # 
-# # Os clientes ˙nicos representam quase que a totalidade da base. Portanto, a an·lise de sugest„o de pedidos 
-# # fica comprometida pois n„o h· forma de "trackear" a atividade dos usu·rios. Uma maneira de fazer isto seria
-# # utilizar da regi„o da compra.
+# # Os clientes √∫nicos representam quase que a totalidade da base. Portanto, a an√°lise de sugest√£o de pedidos 
+# # fica comprometida pois n√£o h√° forma de "trackear" a atividade dos usu√°rios. Uma maneira de fazer isto seria
+# # utilizar da regi√£o da compra.
 # 
 # 
 # 
@@ -177,10 +177,10 @@ mun.shape = read_sf('../Mapas/BR_Municipios_2019.shp')
 
 # JUNCAO DE BASES ---------------------------------------------------------
 
-length(unique(ordem$order_id)) # "order_id" È chave prim·ria para a base ORDEM.
+length(unique(ordem$order_id)) # "order_id" √© chave prim√°ria para a base ORDEM.
 
-# Temos 775 ordem sem designaÁ„o de produtos. Como essas ordens n„o possuem esta
-# associaÁ„o, n„o s„o ˙teis para nossa an·lise e ser„o filtradas.
+# Temos 775 ordem sem designa√ß√£o de produtos. Como essas ordens n√£o possuem esta
+# associa√ß√£o, n√£o s√£o √∫teis para nossa an√°lise e ser√£o filtradas.
 sum(ordem$order_id %in% ordem.item$order_id) 
 sum(!ordem$order_id %in% ordem.item$order_id)
 
@@ -194,17 +194,17 @@ sum(!ordem.item$order_id %in% ordem$order_id) # OK!
 
 # Para o REVIEW das ordens temos de realizar a mesma checagem.
 sum(ordem$order_id %in% ordem.op$order_id)
-sum(!ordem$order_id %in% ordem.op$order_id) # Todas as ordens possuem avaliaÁ„o
+sum(!ordem$order_id %in% ordem.op$order_id) # Todas as ordens possuem avalia√ß√£o
 
 sum(ordem.op$order_id %in% ordem$order_id)
-sum(!ordem.op$order_id %in% ordem$order_id) # A volta È v·lida
+sum(!ordem.op$order_id %in% ordem$order_id) # A volta √© v√°lida
 
-# N„o existem avaliaÁıes de ordens inexistentes. POR…M, h· mais avaliaÁıes do que ordens.
-# Como n„o h· maneira de linkar a avaliaÁ„o ao produto segundo as vari·veis descritas na
-# base, o melhor a fazer È agrupar pelo ID da ordem e fazer uma mÈdia ou arredonde do review.
-length(unique(ordem.op$order_id)) # Igual ao n˙mero de ordens, vamos seguir...
+# N√£o existem avalia√ß√µes de ordens inexistentes. POR√âM, h√° mais avalia√ß√µes do que ordens.
+# Como n√£o h√° maneira de linkar a avalia√ß√£o ao produto segundo as vari√°veis descritas na
+# base, o melhor a fazer √© agrupar pelo ID da ordem e fazer uma m√©dia ou arredonde do review.
+length(unique(ordem.op$order_id)) # Igual ao n√∫mero de ordens, vamos seguir...
 
-# Por opÁ„o de an·lise, foi feito o arredonde para o inteiro mais prÛximo
+# Por op√ß√£o de an√°lise, foi feito o arredonde para o inteiro mais pr√≥ximo
 order.op.n = ordem.op %>% group_by(order_id) %>% summarise(review = as.integer(round(mean(review_score), 0)))
 nrow(order.op.n) # Show!
 
@@ -212,27 +212,27 @@ nrow(order.op.n) # Show!
 
 
 
-# A avaliaÁ„o dos clientes atravÈs da base customer.
-length(unique(cliente$customer_id)) # Ligado diretamente ao n˙mero de ordens
-length(unique(cliente$customer_unique_id)) # Identifica o mesmo usu·rio
+# A avalia√ß√£o dos clientes atrav√©s da base customer.
+length(unique(cliente$customer_id)) # Ligado diretamente ao n√∫mero de ordens
+length(unique(cliente$customer_unique_id)) # Identifica o mesmo usu√°rio
 
-# O n˙mero de usu·rios com mais de uma compra s„o pequenos: 3345 apenas
+# O n√∫mero de usu√°rios com mais de uma compra s√£o pequenos: 3345 apenas
 length(unique(cliente$customer_id)) - length(unique(cliente$customer_unique_id))
 
-# Se o cliente for o menor gr„o da base, isto implicar· em um algoritmo de recomendaÁ„o ruim
-# devido ‡ pobreza da base no que se refere ao histÛrico de consumo pelos usu·rios.
-# Para tentar contornar este problema, uma alternativa que adotaremos mais adiante ser· adotar
-# como menor gr„o o Sufixo do ZIP Code.
+# Se o cliente for o menor gr√£o da base, isto implicar√° em um algoritmo de recomenda√ß√£o ruim
+# devido √† pobreza da base no que se refere ao hist√≥rico de consumo pelos usu√°rios.
+# Para tentar contornar este problema, uma alternativa que adotaremos mais adiante ser√° adotar
+# como menor gr√£o o Sufixo do ZIP Code.
 
 
 
 
 
-# Identificamos na base de Produtos que existem 610 produtos sem descriÁıes de categorias.
-# Esses produtos tÍm apenas descriÁ„o de tamanho e peso e portanto n„o ir„o compor a base final.
+# Identificamos na base de Produtos que existem 610 produtos sem descri√ß√µes de categorias.
+# Esses produtos t√™m apenas descri√ß√£o de tamanho e peso e portanto n√£o ir√£o compor a base final.
 sum(is.na(produto$product_category_name))
 produto.n = produto[!is.na(produto$product_category_name),]
-nrow(produto.n) == length(unique(produto.n$product_id)) # product_id È chave prim·ria
+nrow(produto.n) == length(unique(produto.n$product_id)) # product_id √© chave prim√°ria
 
 
 
@@ -256,10 +256,10 @@ length(unique(z2$order_id))
 z3 = z2[!z2$order_id %in% z2[z2$payment_type != 'voucher', ]$order_id,]
 length(unique(z3$order_id))
 
-# Como n„o temos informaÁ„o prÈvia de "possibilidades de pagamento" para cada produto, acaba
-# n„o sendo uma informaÁ„o confi·vel para o algorÌtmo de recomendaÁ„o. AlÈm disso, temos 2961
-# ordens com mais de um mÈtodo de pagamento empregado, sendo dividido em vouchers + cart„o em
-# sua grande maioria: Das 2961 ordens, 427 s„o pagas APENAS com voucher.
+# Como n√£o temos informa√ß√£o pr√©via de "possibilidades de pagamento" para cada produto, acaba
+# n√£o sendo uma informa√ß√£o confi√°vel para o algor√≠tmo de recomenda√ß√£o. Al√©m disso, temos 2961
+# ordens com mais de um m√©todo de pagamento empregado, sendo dividido em vouchers + cart√£o em
+# sua grande maioria: Das 2961 ordens, 427 s√£o pagas APENAS com voucher.
 
 rm(z1, z2, z3)
 
@@ -267,12 +267,12 @@ rm(z1, z2, z3)
 
 
 
-# Cliente - GeolocalizaÁ„o !!!! N√O VAMOS USAR... AS INFORMA«’ES DA BASE CLIENTES BASTAM !!!!
+# Cliente - Geolocaliza√ß√£o !!!! N√ÉO VAMOS USAR... AS INFORMA√á√ïES DA BASE CLIENTES BASTAM !!!!
 
 # length(unique(cliente.geo$geolocation_zip_code_prefix)) # 19015
 # unique(cliente.geo$geolocation_state) # 27 - OK
 # 
-# # O nome das cidades est· com problemas. O cÛdigo abaixo tenta resolver este problema.
+# # O nome das cidades est√° com problemas. O c√≥digo abaixo tenta resolver este problema.
 # cliente.geo.n = cliente.geo %>%
 #   mutate(
 #     geolocation_city = toupper(str_replace_all(
@@ -292,9 +292,9 @@ rm(z1, z2, z3)
 # # checar os repetidos
 # View(cliente.geo.n[cliente.geo.n$geolocation_zip_code_prefix %in% nl$geolocation_zip_code_prefix,])
 # 
-# # O preenchimento das cidades desta base est· muito aquÈm do esperado, deixando a desejar, e portanto
-# # n„o È possÌvel utilizarmos este campo confiavelmente. A melhor opÁ„o seria trazer este campo de outra
-# # fonte ou simplesmente n„o utiliza-lo, trabalhando apenas com o prefixo do zip e o estado associado.
+# # O preenchimento das cidades desta base est√° muito aqu√©m do esperado, deixando a desejar, e portanto
+# # n√£o √© poss√≠vel utilizarmos este campo confiavelmente. A melhor op√ß√£o seria trazer este campo de outra
+# # fonte ou simplesmente n√£o utiliza-lo, trabalhando apenas com o prefixo do zip e o estado associado.
 # 
 # cliente.geo.n2 = cliente.geo %>%
 #   select(geolocation_zip_code_prefix,geolocation_state) %>%
@@ -310,9 +310,9 @@ rm(z1, z2, z3)
 # View(cliente.geo.n2[cliente.geo.n2$geolocation_zip_code_prefix %in% nl2$geolocation_zip_code_prefix,])
 # 
 # # Mesmo assim, ainda temos alguns zips com estados repetidos, talvez mesmo estes sejam importantes
-# # buscar em uma fonte externa. Esta checagem È v·lida para que dÍ mais fidelidade ao dado.
-# # ApÛs a captaÁ„o dos ceps, foi feita a adaptaÁ„o manual para que ficasse condizente com o nÌvel
-# # de granularidade da base - prefixo de cinco n˙meros do cep - e pudesse ser anexado.
+# # buscar em uma fonte externa. Esta checagem √© v√°lida para que d√™ mais fidelidade ao dado.
+# # Ap√≥s a capta√ß√£o dos ceps, foi feita a adapta√ß√£o manual para que ficasse condizente com o n√≠vel
+# # de granularidade da base - prefixo de cinco n√∫meros do cep - e pudesse ser anexado.
 # 
 # length(unique(cep$zip_pref))
 # 
@@ -325,12 +325,12 @@ rm(z1, z2, z3)
 # # checar os repetidos
 # View(cep[cep$zip_pref %in% nl3$zip_pref,])
 # 
-# # As duplicidades de ceps analisadas manualmente, devido ‡ baixa quantidade, confirmaram que de
-# # fato, alguns municÌpios possuem o mesmo prefixo e n„o est„o necessariamente prÛximos, porÈm 
-# # sempre na mesma unidade federativa. Este È o caso de Cumaru e S„o JosÈ da Coroa Grande, em
-# # Pernambuco, separados por 150 Kilometros de dist‚ncia. 
+# # As duplicidades de ceps analisadas manualmente, devido √† baixa quantidade, confirmaram que de
+# # fato, alguns munic√≠pios possuem o mesmo prefixo e n√£o est√£o necessariamente pr√≥ximos, por√©m 
+# # sempre na mesma unidade federativa. Este √© o caso de Cumaru e S√£o Jos√© da Coroa Grande, em
+# # Pernambuco, separados por 150 Kilometros de dist√¢ncia. 
 # 
-# Para ver a tabela abaixo È necess·rio rodar a base
+# Para ver a tabela abaixo √© necess√°rio rodar a base
 # View(base[(!base$customer_zip_code_prefix %in% cep$zip_pref),])
 #
 # rm(nl, nl2, nl3)
@@ -342,16 +342,16 @@ rm(z1, z2, z3)
 
 # PIB per Capita
 
-# Para adicionar o PIB per capita municipal, segundo os dados da base, foi necess·rio utilisar de
-# um recurso n„o muito pr·tico, pois o campo de "cidades" estava mal preenchido e a base n„o possuia
-# alguma sigla de referÍncia para as regiıes geogr·ficas. A saÌda encontrada consistiu em baixar
-# o arquivo com os municÌpios mapeados por uma fonte oficial e verificar a geolocalizaÁ„o dos
-# pontos em relaÁ„o a estes municÌpios. O tempo de processamento desta etapa È levemente custoso,
-# uma vez que a capilaridade È muito grande, e identificar a localizaÁ„o de cada usu·rio da base 
+# Para adicionar o PIB per capita municipal, segundo os dados da base, foi necess√°rio utilisar de
+# um recurso n√£o muito pr√°tico, pois o campo de "cidades" estava mal preenchido e a base n√£o possuia
+# alguma sigla de refer√™ncia para as regi√µes geogr√°ficas. A sa√≠da encontrada consistiu em baixar
+# o arquivo com os munic√≠pios mapeados por uma fonte oficial e verificar a geolocaliza√ß√£o dos
+# pontos em rela√ß√£o a estes munic√≠pios. O tempo de processamento desta etapa √© levemente custoso,
+# uma vez que a capilaridade √© muito grande, e identificar a localiza√ß√£o de cada usu√°rio da base 
 # de clientes pode levar pelo menos 25 segundos entre a leitura do arquivo do mapa e a 
-# identificaÁ„o pelo algoritmo.
+# identifica√ß√£o pelo algoritmo.
 
-# Adicionando o CÛdigo do municÌpio (IBGE) na base clientes.geo
+# Adicionando o C√≥digo do munic√≠pio (IBGE) na base clientes.geo
 pnts = data.frame("x" = cliente.geo$geolocation_lat, "y" = cliente.geo$geolocation_lng)
 
 pnts_sf <- st_as_sf(pnts, coords = c('y', 'x'), crs = st_crs(mun.shape))
@@ -364,13 +364,13 @@ pnts <- pnts_sf %>%
     uf = if_else(is.na(intersection), '', mun.shape$SIGLA_UF[intersection])
   ) 
 
-# A junÁ„o revelou algumas localizaÁıes geogr·ficas referenciadas fora do Brasil. Embora uma
-# checagem manual no Google revelou que os nomes das cidades estavam corretos em sua destinaÁ„o,
-# as unidades federativas brasileiras ainda estavam atreladas. … possÌvel que tenha havido algum erro
-# conceitual na construÁ„o da base por parte da Olist, ent„o a opÁ„o tomada foi retirar a
-# informaÁ„o desses clientes. Caso essa decis„o impactasse fortemente na base, talvez fosse 
-# necess·rio mais um tratamento, usando uma metodologia que pudesse complementar os dados
-# faltantes, mas no final o impacto foi mÌnimo e n„o se fez necess·rio.
+# A jun√ß√£o revelou algumas localiza√ß√µes geogr√°ficas referenciadas fora do Brasil. Embora uma
+# checagem manual no Google revelou que os nomes das cidades estavam corretos em sua destina√ß√£o,
+# as unidades federativas brasileiras ainda estavam atreladas. √â poss√≠vel que tenha havido algum erro
+# conceitual na constru√ß√£o da base por parte da Olist, ent√£o a op√ß√£o tomada foi retirar a
+# informa√ß√£o desses clientes. Caso essa decis√£o impactasse fortemente na base, talvez fosse 
+# necess√°rio mais um tratamento, usando uma metodologia que pudesse complementar os dados
+# faltantes, mas no final o impacto foi m√≠nimo e n√£o se fez necess√°rio.
 
 hist(pib.pc.n$pib_pc)
 mean(pib.pc.n$pib_pc)
@@ -384,14 +384,14 @@ cliente.geo.n = bind_cols(cliente.geo,as.data.frame(pnts)[,c(2:5)]) %>% # OK - P
   select(geolocation_zip_code_prefix, mun_ref, uf) %>%
   distinct() %>%
   select(-uf) %>%
-  inner_join(pib.pc.n, by = c('mun_ref'='cd_ref')) # OK - cd_ref È PK em pib.pc 
-# Edit: 4300002 n„o tem pib_pc, mas tem ordens na base de l·
-# daÌ precisei fazer inner_join pra n„o trazer esse mun.
+  inner_join(pib.pc.n, by = c('mun_ref'='cd_ref')) # OK - cd_ref √© PK em pib.pc 
+# Edit: 4300002 n√£o tem pib_pc, mas tem ordens na base de l√°
+# da√≠ precisei fazer inner_join pra n√£o trazer esse mun.
 
 length(unique(cliente.geo.n$mun)) # OK - Menor que 5570, total de munic segundo o IBGE.
 
-# Por opÁ„o, os ceps que aparecerem repetidos na base de clientes.geo ser„o tratados de maneira
-# que PREVALE«A o municÌpio de maior populaÁ„o.
+# Por op√ß√£o, os ceps que aparecerem repetidos na base de clientes.geo ser√£o tratados de maneira
+# que PREVALE√áA o munic√≠pio de maior popula√ß√£o.
 
 aux_1 = as.data.frame(table(cliente.geo.n$geolocation_zip_code_prefix)) %>%
   filter(Freq == 1) %>%
@@ -401,7 +401,7 @@ aux_2 = as.data.frame(table(cliente.geo.n$geolocation_zip_code_prefix)) %>%
   filter(Freq > 1) %>%
   select(Var1)
 
-# ForÁando com que CEPs repetidos sejam da maior populaÁ„o
+# For√ßando com que CEPs repetidos sejam da maior popula√ß√£o
 cliente.geo.n.2 = cliente.geo.n %>%
   filter(geolocation_zip_code_prefix %in% aux_1$Var1) %>%
   
@@ -418,7 +418,7 @@ cliente.geo.n.2 = cliente.geo.n %>%
 
 length(unique(cliente.geo.n.2$geolocation_zip_code_prefix)) 
 
-# Agora temos uma informaÁ„o confi·vel de dados de cliente, com CEPs como Chave Prim·ria para esta base, permitindo a junÁ„o
+# Agora temos uma informa√ß√£o confi√°vel de dados de cliente, com CEPs como Chave Prim√°ria para esta base, permitindo a jun√ß√£o
 # com a base principal. 
 
 rm(aux_1, aux_2, pnts, pnts_sf, cliente.geo.n)
@@ -429,7 +429,7 @@ rm(aux_1, aux_2, pnts, pnts_sf, cliente.geo.n)
 
 
 
-# Vias de fato ----- FAZENDO A JUN«√O DA BASE -------------------------------------------------------
+# Vias de fato ----- FAZENDO A JUN√á√ÉO DA BASE -------------------------------------------------------
 base = ordem %>%
   select(1:4) %>% 
   
@@ -441,7 +441,7 @@ base = ordem %>%
   
   inner_join(cliente.geo.n.2, by = c('customer_zip_code_prefix'='geolocation_zip_code_prefix')) %>% # Ok
   
-  inner_join(produto.n, by = 'product_id') %>% # Ok - Apenas produtos com descriÁ„o
+  inner_join(produto.n, by = 'product_id') %>% # Ok - Apenas produtos com descri√ß√£o
   
   mutate(
     dia_faixa = case_when(
@@ -497,13 +497,13 @@ glimpse(base)
 
 # !!!!!!!! IMPORTANTE !!!!!!!!  
 
-# Filtro Status da ordem (PARA VER A ANALISE ABAIXO … PRECISO COMENTAR O FILTRO NA JUN«√O)
+# Filtro Status da ordem (PARA VER A ANALISE ABAIXO √â PRECISO COMENTAR O FILTRO NA JUN√á√ÉO)
 
 # A base continha 2131 ordens com status diferentes de 'entregue'. Essas ordens representavam
-# 2387 produtos no total. Cerca de 50% desses produtos possuiam status como 'aprovado', porÈm
-# como seria necess·rio entendendimento mais profundo dos dados para saber se isto significaria
+# 2387 produtos no total. Cerca de 50% desses produtos possuiam status como 'aprovado', por√©m
+# como seria necess√°rio entendendimento mais profundo dos dados para saber se isto significaria
 # que os produtos com esse status,  ou qualquer diferente daqueles que foram entregues, de
-# fato chegaram aos destinat·rios, foi feita a opÁ„o por removÍ-los da base.
+# fato chegaram aos destinat√°rios, foi feita a op√ß√£o por remov√™-los da base.
 
 # unique(base$order_status)
 # length(unique(base[base$order_status != 'delivered',]$order_id))
@@ -526,9 +526,9 @@ glimpse(base)
 ##### rm(aux)
 
 
-# Temos uma quantidade razoavelmente baixa de vendedores para o n˙mero de produtos vendidos
+# Temos uma quantidade razoavelmente baixa de vendedores para o n√∫mero de produtos vendidos
 # Pode ser que o vendedor influencie no momento da compra... O estado do vendedor pode ser
-# captado atravÈs da base "vendedor"
+# captado atrav√©s da base "vendedor"
 length(unique(base$seller_id))
 
 
@@ -546,47 +546,47 @@ write_csv(base, '../Bases/Output/base_clean.csv')
 # attach(base)
 # detach(base)
 
-# <><><><><><><><> Dump de memÛria, caso seja necess·rio <><><><><><><><>
+# <><><><><><><><> Dump de mem√≥ria, caso seja necess√°rio <><><><><><><><>
 # rm(list = ls()[ls() != "base"])
 
 # names(base)
-### !!!!!!!!!!! N√O DEU CERTO PELO PACOTE RECOMMENDERLAB !!!!!!!!!!!!!!! 
-# # Criando a matriz de usu·rios com relaÁ„o aos pedidos de cada categoria.
-# # N„o È necess·rio adicionar o fator temporal
+### !!!!!!!!!!! N√ÉO DEU CERTO PELO PACOTE RECOMMENDERLAB !!!!!!!!!!!!!!! 
+# # Criando a matriz de usu√°rios com rela√ß√£o aos pedidos de cada categoria.
+# # N√£o √© necess√°rio adicionar o fator temporal
 # comp.mat = dcast(base, 
 #                  customer_zip_code_prefix ~ product_category_name,
 #                  value.var = "product_category_name",
 #                  fun.agg = function(x) length(x)) %>%
-#   select(-1) %>%  # Remove a informaÁ„o de usu·rio
+#   select(-1) %>%  # Remove a informa√ß√£o de usu√°rio
 #   as.matrix
 #   
-# # POR PRODUTO EXPLODE A MEM”RIA RAM, IMPOSSÕVEL SEM UM SERVIDOR
+# # POR PRODUTO EXPLODE A MEM√ìRIA RAM, IMPOSS√çVEL SEM UM SERVIDOR
 # # 14.695 * 31.589 = 46.420.0355      matriz muito absurdamente grande (product_id)
-# # 14.695 * 73 = 1.072.735            mais factÌvel, roda liso
+# # 14.695 * 73 = 1.072.735            mais fact√≠vel, roda liso
 # 
 # 
 # 
-# # Para realizar a recomendaÁ„o no R, usaremos o "recommenderlab". Esse pacote nos d· a Filtragem
-# # Colaborativa, calculando a similaridade entre o consumo dos usu·rios. 
+# # Para realizar a recomenda√ß√£o no R, usaremos o "recommenderlab". Esse pacote nos d√° a Filtragem
+# # Colaborativa, calculando a similaridade entre o consumo dos usu√°rios. 
 # 
 # 
-# ## A PARTIR DAQUI N√O FUNCIONA PARA N”S, POIS COMO A VARI¡VEL RESPOSTA … DIFERENTE, ESTE METODO FALHA
+# ## A PARTIR DAQUI N√ÉO FUNCIONA PARA N√ìS, POIS COMO A VARI√ÅVEL RESPOSTA √â DIFERENTE, ESTE METODO FALHA
 # ## Ref: https://www.data-mania.com/blog/how-to-build-a-recommendation-engine-in-r/ (Furada)
 
 
 # # Esse daqui esplicita os metodos do pacote.
-# ## !!!!! N√O CONSEGUI GERAR UMA RECOMENDA«√O PELO RECOMMENDERLAB !!!!!
+# ## !!!!! N√ÉO CONSEGUI GERAR UMA RECOMENDA√á√ÉO PELO RECOMMENDERLAB !!!!!
 # # https://rpubs.com/jeknov/movieRec
-# # A metodologia est· toda descrita no help! ("user guides")
+# # A metodologia est√° toda descrita no help! ("user guides")
 # 
 # teste = as(comp.mat, "realRatingMatrix")
 # 
-# ## Entendendo o mÈtodo de recomendaÁ„o
+# ## Entendendo o m√©todo de recomenda√ß√£o
 # #recommenderRegistry$get_entries(dataType = "realRatingMatrix")
 # 
-# # O mais perto que eu vi foi o POPULAR, mas n„o consegui implementar uma similaridade
-# # entre os usu·rios, daÌ, pelo que eu entendi, n„o fez os clusters. O mÈtodo È esse, mas
-# # n„o t· implementado. Acho que vamos ter que implementar...
+# # O mais perto que eu vi foi o POPULAR, mas n√£o consegui implementar uma similaridade
+# # entre os usu√°rios, da√≠, pelo que eu entendi, n√£o fez os clusters. O m√©todo √© esse, mas
+# # n√£o t√° implementado. Acho que vamos ter que implementar...
 # 
 # rec_mod = Recommender(data = teste, method = "RERECOMMEND")
 # (as.data.frame(as(predict(rec_mod, teste[1], n=5), "list")))
@@ -605,7 +605,7 @@ write_csv(base, '../Bases/Output/base_clean.csv')
 #   arrange(desc(.)) %>%
 #   head(5)
 # 
-# # Esse n„o serve de nada
+# # Esse n√£o serve de nada
 # (as(getModel(rec_mod)$topN, "list"))[[1]][1:5]
 # 
 # sum(comp.mat$cama_mesa_banho)
@@ -618,7 +618,7 @@ write_csv(base, '../Bases/Output/base_clean.csv')
 
 # dump_env()
 
-# Vou comeÁar a implementaÁ„o daqui
+# Vou come√ßar a implementa√ß√£o daqui
 
 # FILTRAGEM COLABORATIVA
 
@@ -645,14 +645,14 @@ write_csv(base, '../Bases/Output/base_clean.csv')
 
 
 
-# ## !!!!! TENTATIVA DE REALIZAR A CLUSTERIZA«√O. MAS N√O DEVE SER FEITO DESTA MANEIRA !!!!!!!!!!!
+# ## !!!!! TENTATIVA DE REALIZAR A CLUSTERIZA√á√ÉO. MAS N√ÉO DEVE SER FEITO DESTA MANEIRA !!!!!!!!!!!
 # # Desta maneira perde-se a sensibilidade temporal e torna clusteriza o cep diretamente
-# # Isso È um problema pois a ideia era que a gente pudesse recomendar utilizando, alÈm da
-# # localizaÁ„o, as informaÁıes extras do perÌodo, como o dia da seman, a hora, etc, e dessa maneira
-# # apenas o CEP "seria suficiente" para identificar o local. DaÌ È como se fosse uma "interseÁ„o" entre
-# # colaborativa e baseada em conte˙do.
+# # Isso √© um problema pois a ideia era que a gente pudesse recomendar utilizando, al√©m da
+# # localiza√ß√£o, as informa√ß√µes extras do per√≠odo, como o dia da seman, a hora, etc, e dessa maneira
+# # apenas o CEP "seria suficiente" para identificar o local. Da√≠ √© como se fosse uma "interse√ß√£o" entre
+# # colaborativa e baseada em conte√∫do.
 # 
-# # Reshaping as vari·veis
+# # Reshaping as vari√°veis
 # # "mun_ref"
 # # "uf"
 # # "dia_faixa"
@@ -742,7 +742,7 @@ write_csv(base, '../Bases/Output/base_clean.csv')
 # 
 # 
 # 
-# # REALIZA«√O DA CLUSTERIZA«√O DE CEPS POR AFINIDADE
+# # REALIZA√á√ÉO DA CLUSTERIZA√á√ÉO DE CEPS POR AFINIDADE
 # set.seed(100)
 # 
 # #cbind(names(b.trn.cf),c(1:99))
@@ -770,7 +770,7 @@ write_csv(base, '../Bases/Output/base_clean.csv')
 
 
 
-# ###     !!!!!   N„o rodar! Aqui eu tava vendo a distribuiÁ„o de cada categoria.
+# ###     !!!!!   N√£o rodar! Aqui eu tava vendo a distribui√ß√£o de cada categoria.
 # # Estudo de categorias
 # 
 # aux = base %>%
@@ -828,22 +828,22 @@ names(base)
 # ### !!!                IMPORTANTE                !!!
 # ### !!!                                          !!!
 # ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# # Tentando implementar a soluÁ„o encontrada em:
+# # Tentando implementar a solu√ß√£o encontrada em:
 # # https://towardsdatascience.com/clean-a-complex-dataset-for-modelling-with-recommendation-algorithms-c977f7ba28b1
 # #
 # # Conceito: MARKET BASKET ANALYTICS
 # #
-# # Esta soluÁ„o È LEGAL na hora de recomendar produtos novos, como se a pessoa tivesse consumido alguns e a gente
-# # quisesse recomendar algo apÛs isso. Essa situaÁ„o se aplica em dois casos, no histÛrico, e em uma possivel
-# # compra "conjunta" (ou cross-sell). A crÌtica que eu (Matheus) enxergo È que por esta tÈcnica n„o È recomendado
-# # um produto que foi comprado anteriormente. Na minha concepÁ„o isso È uma falha estratÈgica. Imagine a situaÁ„o:
-# # Compra de raÁ„o de pets, deveria ser sugerido a que compra sempre. O mesmo acontece com papelaria, produtos de
-# # beleza, entre outros. Vamos guardar essa carta na manga e caso dÍ tempo a gente implementa em conjunto com a ideia
-# # da recomendaÁ„o de categoria. Poderiamos inclusive fazer 'tipo' um site, onde esse algoritmo rodaria no carrinho
+# # Esta solu√ß√£o √© LEGAL na hora de recomendar produtos novos, como se a pessoa tivesse consumido alguns e a gente
+# # quisesse recomendar algo ap√≥s isso. Essa situa√ß√£o se aplica em dois casos, no hist√≥rico, e em uma possivel
+# # compra "conjunta" (ou cross-sell). A cr√≠tica que eu (Matheus) enxergo √© que por esta t√©cnica n√£o √© recomendado
+# # um produto que foi comprado anteriormente. Na minha concep√ß√£o isso √© uma falha estrat√©gica. Imagine a situa√ß√£o:
+# # Compra de ra√ß√£o de pets, deveria ser sugerido a que compra sempre. O mesmo acontece com papelaria, produtos de
+# # beleza, entre outros. Vamos guardar essa carta na manga e caso d√™ tempo a gente implementa em conjunto com a ideia
+# # da recomenda√ß√£o de categoria. Poderiamos inclusive fazer 'tipo' um site, onde esse algoritmo rodaria no carrinho
 # # de compras.
 # 
 # ratings_matrix <- base %>%
-#   select(customer_zip_code_prefix, product_category_name) %>% # Verificando "QUEM J¡ COMPROU DE DETERMINADA CATEGORIA"
+#   select(customer_zip_code_prefix, product_category_name) %>% # Verificando "QUEM J√Å COMPROU DE DETERMINADA CATEGORIA"
 #   distinct() %>%
 #   mutate(value = 1) %>%
 #   spread(product_category_name, value, fill = 0) %>%
@@ -862,7 +862,7 @@ names(base)
 #                    train = 0.8,      # Tamanho da amostra de treino
 #                    given = -1)
 # 
-# # Testando v·rios algoritmos no recommenderlab
+# # Testando v√°rios algoritmos no recommenderlab
 # algorithms <- list(
 #   "association rules" = list(name  = "AR",      param = list(supp = 0.01, conf = 0.01)),
 #   "random items"      = list(name  = "RANDOM",  param = NULL),
@@ -934,12 +934,12 @@ names(base)
 
 
 
-### METODO DE RECOMENDA«√O BASEADO EM RANKEAMENTO -------------------------------
+### METODO DE RECOMENDA√á√ÉO BASEADO EM RANKEAMENTO -------------------------------
 #
-# A ideia aqui È gerar um RANK segundo CADA vari·vel observada e unir estes ranks,
-# dando pesos para cada uma das vari·veis na composiÁ„o final. Acho que a ideia È
-# parecida com a an·lise de regress„o multivariada, de certa maneira, por conta da
-# "import‚ncia" de cada vari·vel.
+# A ideia aqui √© gerar um RANK segundo CADA vari√°vel observada e unir estes ranks,
+# dando pesos para cada uma das vari√°veis na composi√ß√£o final. Acho que a ideia √©
+# parecida com a an√°lise de regress√£o multivariada, de certa maneira, por conta da
+# "import√¢ncia" de cada vari√°vel.
 base = read_csv('../Bases/Output/base_clean.csv')
 names(base)
 
@@ -967,24 +967,24 @@ recomenda = function(base = NULL,
   
   # prop_tst
   if(!is.numeric(prop_tst)){
-    print("prop_tst da base de teste deve ser numÈrico entre 0 e 1");return()}
+    print("prop_tst da base de teste deve ser num√©rico entre 0 e 1");return()}
   if((prop_tst<=0) | (prop_tst>=1)){
-    print("ProporÁ„o da base de teste deve ser numÈrico entre 0 e 1");return()}
+    print("Propor√ß√£o da base de teste deve ser num√©rico entre 0 e 1");return()}
   
   # met_tst
   if(!((met_tst!="end")|(met_tst!="random"))){
-    print("Especifique o mÈtodo de separaÁ„o corretamente");return()}
+    print("Especifique o m√©todo de separa√ß√£o corretamente");return()}
   
   # var_list_dep
   if(!is.list(var_list_dep)){
     print("var_list_dep deve ser lista de vetores")
-    print("Nota: Cada primeiro elemento do vetor È gr„o mÌnimo");return()}
+    print("Nota: Cada primeiro elemento do vetor √© gr√£o m√≠nimo");return()}
   
   for(i in 1:length(var_list_dep)){
     if(any(!(var_list_dep[[i]] %in% names(base)))){
       print('var_list_dep deve conter nomes que constam nas colunas da base')
       print(paste0('Erro no item ', i, ' da lista'))
-      print("Nota: Cada primeiro elemento do vetor È gr„o mÌnimo"); return()}}
+      print("Nota: Cada primeiro elemento do vetor √© gr√£o m√≠nimo"); return()}}
   
   # var_list_ind
   if(any(!(var_list_ind %in% names(base)))){
@@ -996,7 +996,7 @@ recomenda = function(base = NULL,
   if(!(var_recom %in% names(base))){
     print("var_recom deve conter um nome que consta nas colunas da base"); return()}
   
-  ## N„o precisa do timestamp. Basta pensar em cada vari·vel ts como "gr„o", pois j· est„o tratadas.
+  ## N√£o precisa do timestamp. Basta pensar em cada vari√°vel ts como "gr√£o", pois j√° est√£o tratadas.
   # # var_ts
   # if(length(var_ts)!=0)
   #   if(!is.Date(tryCatch(date(base[1,var_ts[1]][[1]]),error=function(e)return("NOT DATA")))){
@@ -1007,8 +1007,8 @@ recomenda = function(base = NULL,
   
   
   # ETAPA 1 - CRIANDO AS BASES DE REFERENCIA PADRAO -----------------
-  # As bases geradas aqui tem como caracterÌstica as vari·veis ligadas ‡ PK.
-  # desde que a PK seja categÛrica.
+  # As bases geradas aqui tem como caracter√≠stica as vari√°veis ligadas √† PK.
+  # desde que a PK seja categ√≥rica.
   
   for(i in 1:length(var_list_dep)){
     aux1 = base[,var_list_dep[[i]]] %>%
@@ -1038,7 +1038,7 @@ recomenda = function(base = NULL,
   
   # ETAPA 3 - CRIACAO DO PERFIL DE COMPRADOR [UP] -----------------
   # Classificacao de user a priori Ex: valor, frete, etc, usando quantis definidos na entrada.
-  # Ser„o criadas novas colunas na base com o sufixo "_cls" de 'classification'.
+  # Ser√£o criadas novas colunas na base com o sufixo "_cls" de 'classification'.
   if(length(var_list_cls)!=0){
     for(i in 1:length(var_list_cls)){
       aux1 = unlist(as.data.frame(b_trn[, var_list_cls[[i]][1]] ))
@@ -1106,7 +1106,7 @@ recomenda = function(base = NULL,
   
   
   # ETAPA 5 - SETANDO OS PARAMETROS [OK] -----------------
-  # A primeira iteraÁ„o È de bom grado que comece com "peso zero"
+  # A primeira itera√ß√£o √© de bom grado que comece com "peso zero"
   sprd_names = ls()[contains("spread_",T,ls())]
   var_names = gsub("spread_","",sprd_names)
   n_par = length(sprd_names)
@@ -1137,9 +1137,9 @@ recomenda = function(base = NULL,
              select(-var_names[i]))
   }
   
-  # Realizando o TRIMMING dos par‚metros
+  # Realizando o TRIMMING dos par√¢metros
   for(m in c(1:nrow(param))){
-    # Este FOR È respons·vel por acumular as matrizes rankeadas ponderadas
+    # Este FOR √© respons√°vel por acumular as matrizes rankeadas ponderadas
     for (j in c(1:n_par)){
       par_aux = as.numeric(as.character(param[m,j]))
       aux2 = get(paste0("lj_tst_",var_names[j])) %>%
@@ -1165,7 +1165,7 @@ recomenda = function(base = NULL,
       bind_cols(.,b_tst_2[,var_recom]) %>%
       as.data.frame()
     
-    # Verifica quantas das recomendaÁıes est„o nas topK
+    # Verifica quantas das recomenda√ß√µes est√£o nas topK
     contador1 = 0
     apply(res_rank_mat,1,FUN = function(x){
       if(x[length(x)] %in% x[1:(length(x)-1)]) contador1 <<- contador1+1})
@@ -1186,14 +1186,14 @@ recomenda = function(base = NULL,
   
   # ETAPA 7 - SAIDA DO MODELO [UP] -----------------
   
-  # HistÛrico Par‚metros e evoluÁ„o da mÈtrica
+  # Hist√≥rico Par√¢metros e evolu√ß√£o da m√©trica
   chosen_param = param[mapping_params,] %>%
     `colnames<-`(var_names) %>%
     bind_cols(iter = mapping_params,metric = mapping_metric)
   # write.xlsx(chosen_param,"param.xlsx")
   
-  # Ajustando a matriz rankeada ponderada com os par‚metros obtidos
-  # EEE os Ìndices para filtrar na recomendaÁ„o.
+  # Ajustando a matriz rankeada ponderada com os par√¢metros obtidos
+  # EEE os √≠ndices para filtrar na recomenda√ß√£o.
   chosen_par_last = param[mapping_params[length(mapping_params)],]
   
   for (j in c(1:n_par)){
@@ -1209,11 +1209,11 @@ recomenda = function(base = NULL,
   
   outp_names = ls()[contains("output_",T,ls())]
   
-  # Tempo de execuÁ„o do modelo
+  # Tempo de execu√ß√£o do modelo
   time_attack = proc.time() - ptm
   # write.table(time_attack[3],"time.txt")
   
-  # Matriz rankeada j· multiplicada pelo par‚metro
+  # Matriz rankeada j√° multiplicada pelo par√¢metro
   lista = list()
   
   # Ordem das matrizes 
@@ -1222,7 +1222,7 @@ recomenda = function(base = NULL,
   # Output
   for(i in c(2:(n_par+1))){lista[[i]] = get(outp_names[i-1])}
   
-  # HistÛrico de Parametros
+  # Hist√≥rico de Parametros
   i = i+1
   lista[[i]] = chosen_param
   
@@ -1271,34 +1271,34 @@ nrow(testando$base_treino)
 nrow(testando$base_teste)
 
 
-# RECOMENDA«√O ENFIM! -----------------
+# RECOMENDA√á√ÉO ENFIM! -----------------
 vars_rec_resp = c("customer_zip_code_prefix", "mun_ref",
 "cd_uf","pib_pc_q5", "pib_pc_q10","dia_faixa",
 "dia_semana", "mes", "mes_quinzena","product_category_name")
 
-# Manter como dataframe para enviar os tÌtulos das colunas
+# Manter como dataframe para enviar os t√≠tulos das colunas
 rec_row = base[sample(nrow(base),1),vars_rec_resp]
 
-## FUN«√O DE RECOMENDA«¬O
+## FUN√á√ÉO DE RECOMENDA√á√ÇO
 rank_recom = function(rec_row, lista){
-  # N˙mero de par‚metros
+  # N√∫mero de par√¢metros
   nparam = length(rec_row)-1
   
-  # Vari·veis da recomendaÁ„o
+  # Vari√°veis da recomenda√ß√£o
   rec_vars = colnames(rec_row)[1:nparam]
   mod_vars = lista[[1]]
   mod_vars_clean = sub("output_","",mod_vars)
   
   if(!any(rec_vars %in% mod_vars_clean) | nparam!=length(lista[[1]]))
-    return('As vari·veis da recomendaÁ„o devem ser idÍnticas ‡s usadas no treino do modelo')
+    return('As vari√°veis da recomenda√ß√£o devem ser id√™nticas √†s usadas no treino do modelo')
   
-  # Vari·vel resposta
+  # Vari√°vel resposta
   resp_var = colnames(rec_row)[nparam+1]
   
   
   for(i in c(1:nparam)){
     # Recriando o DF para ser filtrado.
-    # O int˙ito È manter a indexaÁ„o correta.
+    # O int√∫ito √© manter a indexa√ß√£o correta.
     assign(mod_vars_clean[i], lista[[i+1]] %>% as.data.frame())
     
     # Valor a ser filtrado
@@ -1323,7 +1323,7 @@ rank_recom = function(rec_row, lista){
   }
   
   
-# Manter como dataframe para enviar os tÌtulos das colunas
+# Manter como dataframe para enviar os t√≠tulos das colunas
 (rec_row = base[sample(nrow(base),1),vars_rec_resp])
 rank_recom(rec_row, lista)[1:5,]
 
@@ -1355,14 +1355,14 @@ for(i in 1:10){
 
 
 
-# funÁ„o de teste -> gera/trata para recomendaÁ„o usando CEP e Time.Stamp ------------
+# fun√ß√£o de teste -> gera/trata para recomenda√ß√£o usando CEP e Time.Stamp ------------
 gera_user = function(cep, ts, base){}
 # cep, mun, uf, pib_pc
 # dia_fx, dia_semana, mes, mes_quinz
 
-# funÁ„o de predict -> pega as matrizes multiplicadas pelo par‚metro, filtra, rankeia e d· o TOPN  ------------
+# fun√ß√£o de predict -> pega as matrizes multiplicadas pelo par√¢metro, filtra, rankeia e d√° o TOPN  ------------
 recomenda_predict = function(result_recomenda, user, topN){}
-# pegar somente param e matrizes, multiplic·-los
+# pegar somente param e matrizes, multiplic√°-los
 # filter por cada matriz
 # somar para o rank_final
 # topN
@@ -1383,13 +1383,13 @@ var_to_spread = c("customer_zip_code_prefix","mun_ref","cd_uf",)
 
 
 
-# Spreading da base segundo o zip (recomendaÁ„o baseada em conte˙do)
+# Spreading da base segundo o zip (recomenda√ß√£o baseada em conte√∫do)
 teste1 = base.trn %>%
   select(customer_zip_code_prefix, product_category_name)
 
 t1 = spread(data = as.data.frame(table(teste1)), product_category_name, Freq)
 
-# Rank para baseado em conte˙do (usando o primeiro Zip como referÍncia)
+# Rank para baseado em conte√∫do (usando o primeiro Zip como refer√™ncia)
 rank1 = t(t1[100,2:ncol(t1)]) %>%
   bind_cols(nomes = rownames(.)) %>%
   `colnames<-`(c("cont","cat")) %>%
@@ -1416,13 +1416,13 @@ rank2 = t(t2[1,2:ncol(t2)]) %>%
 
 
 #-----------------------------------------------------------------#
-# Spreading da base segundo o MunicÌpio
+# Spreading da base segundo o Munic√≠pio
 teste3 = base.trn %>%
   select(mun_ref, product_category_name)
 
 t3 = spread(data = as.data.frame(table(teste3)), product_category_name, Freq)
 
-# Exemplo de Rank para o primeiro MunicÌpio da lista
+# Exemplo de Rank para o primeiro Munic√≠pio da lista
 rank3 = t(t3[1,2:ncol(t3)]) %>%
   bind_cols(nomes = rownames(.)) %>%
   `colnames<-`(c("cont","cat")) %>%
@@ -1430,9 +1430,9 @@ rank3 = t(t3[1,2:ncol(t3)]) %>%
   relocate(where(is.character), .before = where(is.numeric)) %>%
   filter(cont>0)
 
-# Note que os ranks s„o exemplos, n„o generalizados. Caso a gente faÁa um shiny (recomendo inclusive)
-# esses "rank" ser„o atrelados ao Zip (pois o zip pertence a um munic, que pertence a uma uf, and so on).
-# No caso, os seguintes estar„o atrelados ao "momento da navegaÁ„o", que ser· o timestamp do cidad„o.
+# Note que os ranks s√£o exemplos, n√£o generalizados. Caso a gente fa√ßa um shiny (recomendo inclusive)
+# esses "rank" ser√£o atrelados ao Zip (pois o zip pertence a um munic, que pertence a uma uf, and so on).
+# No caso, os seguintes estar√£o atrelados ao "momento da navega√ß√£o", que ser√° o timestamp do cidad√£o.
 #
 # Fazer os outros ranks se formos continuar por esse caminho
 # dia_faixa
